@@ -1,0 +1,17 @@
+name: Upload dummy artifact
+
+on:
+  push:
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create text file
+        run: echo "test" > artifact.txt
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mupen-release
+          path: artifact.txt
