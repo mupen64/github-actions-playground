@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version number (e.g. 1.2.0-beta)"
+        description: "Version number (e.g. 1.2.0)"
         required: true
         type: string
 
@@ -44,32 +44,18 @@ jobs:
       - name: Generate changelog with git-cliff
         id: changelog
         run: |
-          git cliff --latest --output CHANGELOG_DRAFT.md || git cliff --output CHANGELOG_DRAFT.md
+          git cliff --latest --config cliff.toml --output CHANGELOG_DRAFT.md || git cliff --config cliff.toml --output CHANGELOG_DRAFT.md
           {
             echo 'body<<EOF'
             cat CHANGELOG_DRAFT.md
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
-      - name: Print release details to summary
-        run: |
-          echo "## 🚀 Draft Beta Release Created" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Field   | Value |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---------|-------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| **Tag** | \`${{ inputs.version }}-${{ steps.commit.outputs.short_hash }}\` |" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "### 📋 Generated Changelog" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          cat CHANGELOG_DRAFT.md >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "> ✏️ **Next step:** Go to [GitHub Releases](../../releases) to review, edit, and publish the draft." >> "$GITHUB_STEP_SUMMARY"
-
       - name: Create draft beta release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ inputs.version }}-${{ steps.commit.outputs.short_hash }}
-          name: ${{ inputs.version }}-${{ steps.commit.outputs.short_hash }}
+          tag_name: ${{ inputs.version }}-beta-${{ steps.commit.outputs.short_hash }}
+          name: ${{ inputs.version }}-beta-${{ steps.commit.outputs.short_hash }}
           body: ${{ steps.changelog.outputs.body }}
           prerelease: true
           draft: true
