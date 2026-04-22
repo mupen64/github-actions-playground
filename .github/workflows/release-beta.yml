@@ -31,6 +31,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: upload-dummy-artifact.yml
           branch: main
           name: mupen-release
           path: ./release-artifact
